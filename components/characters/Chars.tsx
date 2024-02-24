@@ -46,7 +46,6 @@ export default function Chars() {
         }
         const data = await response.json();
         setCharacters(data);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error);
@@ -61,6 +60,7 @@ export default function Chars() {
         }
         const data = await response.json();
         setCharacterData(data.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
         setError(error);
@@ -180,7 +180,9 @@ export default function Chars() {
             <div key={index}>
               <Card character={fullCharacterData} onReadMore={handleReadMore} />
             </div>
-          ) : null;
+          ) : (
+            <Loader />
+          );
         })}
       </div>
       <br />
