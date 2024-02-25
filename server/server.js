@@ -19,13 +19,14 @@ async function fetchAllCharacters() {
       nextUrl = response.data.next;
     } catch (error) {
       console.error("Failed to fetch characters:", error);
-      nextUrl = null; // Megszakítja a ciklust, ha hiba történik
+      nextUrl = null;
     }
   }
 
   return characters;
 }
 
+console.log(characters, "characters");
 async function fetchAdditionalDetails(characters) {
   return Promise.all(
     characters.map(async (character) => {
