@@ -92,6 +92,7 @@ export default function DetailedCard({
             <p>Height: {character.height}</p>
             <p>Mass: {character.mass}</p>
             <p>Birth Year: {character.birth_year}</p>
+            <p>Films number: {films.length}</p>
             <p>HomeWorld: {homeworld.name}</p>
             <p>Terrain: {homeworld.terrain}</p>
             <p>Climate: {homeworld.climate}</p>

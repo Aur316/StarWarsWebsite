@@ -1424,3 +1424,30 @@ img.loading {
   justify-content: center;
   margin: 0 auto;
 }
+.form__field::-webkit-scrollbar {
+  width: 10px;
+}
+
+.form__field::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.form__field::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+.form__field::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.filmButton {
+  background-color: #0074d9;
+  color: #212121;
+  padding: 10px 15px;
+  font-size: 15px;
+  font-weight: bold;
+  border: 2px solid transparent;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}

@@ -4,6 +4,7 @@ import Loader from "../loaders/Loader";
 import DetailedCard from "../card/DetailedCard";
 import Head from "next/head";
 import SearchInput from "./searchInput/SearchInput";
+import FilmSelect from "./searchDropDown/FilmSelect";
 
 interface Character {
   name: string;
@@ -31,20 +32,28 @@ export default function Chars() {
   );
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [characterData, setCharacterData] = useState([]);
-  const [searchQueryFilm, setSearchQueryFilm] = useState("");
   const [searchQueryHomeworld, setSearchQueryHomeworld] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>();
+  const [selectedFilms, setSelectedFilms] = useState<string[]>([]);
+
+  const filmsArray = characterData
+    .map((character: any) => character.films)
+    .flat()
+    .filter(
+      (film: any, index: any, array: any) => array.indexOf(film) === index
+    );
 
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const response = await fetch("/api/characters");
+        const response = await fetch("http://localhost:3001/api/characters");
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
+        console.log(data, "app");
         setCharacters(data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -54,12 +63,15 @@ export default function Chars() {
 
     const fetchCharacterDetail = async () => {
       try {
-        const response = await fetch("/api/characterDetail");
+        const response = await fetch(
+          "http://localhost:3001/api/characterDetails"
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        setCharacterData(data.data);
+        setCharacterData(data);
+        console.log(data, "app");
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -80,10 +92,6 @@ export default function Chars() {
   };
   const handleNameSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-  };
-
-  const handleFilmSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQueryFilm(e.target.value.toLowerCase());
   };
 
   const handleHomeworldSearchChange = (
@@ -108,18 +116,20 @@ export default function Chars() {
       (currentIndex - 1 + characters.length) % characters.length;
     setSelectedCharacter(characters[prevIndex]);
   };
-
+  //console.log(characterData, "app2");
   const filteredCharacters = characterData
-    .filter((character: any) =>
+    .filter((character: Character) =>
       character.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    .filter((character: any) => {
-      if (!searchQueryFilm) return true;
-      return character.films.some((film: any) =>
-        film.toLowerCase().includes(searchQueryFilm)
+    .filter((character: Character) => {
+      if (!selectedFilms.length) return true;
+      return selectedFilms.some((film) =>
+        character.films
+          .map((f: any) => f.toLowerCase())
+          .includes(film.toLowerCase())
       );
     })
-    .filter((character: any) => {
+    .filter((character: Character) => {
       if (!searchQueryHomeworld) return true;
       return character.homeworld.toLowerCase().includes(searchQueryHomeworld);
     });
@@ -158,10 +168,10 @@ export default function Chars() {
           placeholder="Search by name"
           searchChange={handleNameSearchChange}
         />
-        <SearchInput
-          searchQuery={searchQueryFilm}
-          placeholder="Search by film"
-          searchChange={handleFilmSearchChange}
+        <FilmSelect
+          films={filmsArray}
+          selectedFilms={selectedFilms}
+          onChange={setSelectedFilms}
         />
 
         <SearchInput
