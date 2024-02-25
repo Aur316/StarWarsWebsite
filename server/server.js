@@ -53,16 +53,16 @@ async function fetchAdditionalDetails(characters) {
     })
   );
 }
+
 app.get("/api/characters", async (req, res) => {
   try {
     let characters = [];
-    let url = `${SWAPI_BASE_URL}/people/`; // Az alap URL, ahol az első oldal található
+    let url = `${SWAPI_BASE_URL}/people/`;
 
-    // Ismételjük meg, amíg van következő oldal
     while (url) {
       const response = await axios.get(url);
       characters = characters.concat(response.data.results);
-      url = response.data.next; // Frissítsük az URL-t a következő oldalra
+      url = response.data.next;
     }
 
     res.json(characters);
@@ -75,8 +75,8 @@ app.get("/api/characters", async (req, res) => {
 
 app.get("/api/characterDetails", async (req, res) => {
   try {
-    const allCharacters = await fetchAllCharacters(); // Összegyűjti az összes karaktert
-    const charactersWithDetails = await fetchAdditionalDetails(allCharacters); // Lekérdezi az összes karakter részleteit
+    const allCharacters = await fetchAllCharacters();
+    const charactersWithDetails = await fetchAdditionalDetails(allCharacters);
     res.json(charactersWithDetails);
   } catch (error) {
     console.error("Failed to fetch character details", error);
