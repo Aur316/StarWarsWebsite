@@ -8,6 +8,24 @@ const SWAPI_BASE_URL = "https://swapi.dev/api";
 
 app.use(cors());
 
+async function fetchAllCharacters() {
+  let characters = [];
+  let nextUrl = `${SWAPI_BASE_URL}/people/`;
+
+  while (nextUrl) {
+    try {
+      const response = await axios.get(nextUrl);
+      characters = characters.concat(response.data.results);
+      nextUrl = response.data.next;
+    } catch (error) {
+      console.error("Failed to fetch characters:", error);
+      nextUrl = null; // Megszakítja a ciklust, ha hiba történik
+    }
+  }
+
+  return characters;
+}
+
 async function fetchAdditionalDetails(characters) {
   return Promise.all(
     characters.map(async (character) => {
@@ -34,11 +52,20 @@ async function fetchAdditionalDetails(characters) {
     })
   );
 }
-
 app.get("/api/characters", async (req, res) => {
   try {
-    const response = await axios.get(`${SWAPI_BASE_URL}/people/`);
-    res.json(response.data.results);
+    let characters = [];
+    let url = `${SWAPI_BASE_URL}/people/`; // Az alap URL, ahol az első oldal található
+
+    // Ismételjük meg, amíg van következő oldal
+    while (url) {
+      const response = await axios.get(url);
+      characters = characters.concat(response.data.results);
+      url = response.data.next; // Frissítsük az URL-t a következő oldalra
+    }
+
+    res.json(characters);
+    console.log(characters, "characters");
   } catch (error) {
     console.error("Failed to fetch characters", error);
     res.status(500).json({ error: "Failed to fetch the characters." });
@@ -47,10 +74,8 @@ app.get("/api/characters", async (req, res) => {
 
 app.get("/api/characterDetails", async (req, res) => {
   try {
-    const response = await axios.get(`${SWAPI_BASE_URL}/people/`);
-    const charactersWithDetails = await fetchAdditionalDetails(
-      response.data.results
-    );
+    const allCharacters = await fetchAllCharacters(); // Összegyűjti az összes karaktert
+    const charactersWithDetails = await fetchAdditionalDetails(allCharacters); // Lekérdezi az összes karakter részleteit
     res.json(charactersWithDetails);
   } catch (error) {
     console.error("Failed to fetch character details", error);
