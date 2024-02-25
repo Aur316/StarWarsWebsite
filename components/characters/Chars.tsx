@@ -36,6 +36,8 @@ export default function Chars() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>();
   const [selectedFilms, setSelectedFilms] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const charactersPerPage = 10;
 
   const filmsArray = characterData
     .map((character: any) => character.films)
@@ -134,6 +136,28 @@ export default function Chars() {
       return character.homeworld.toLowerCase().includes(searchQueryHomeworld);
     });
 
+  const indexOfLastCharacter = currentPage * charactersPerPage;
+  const indexOfFirstCharacter = indexOfLastCharacter - charactersPerPage;
+  const currentCharacters = filteredCharacters.slice(
+    indexOfFirstCharacter,
+    indexOfLastCharacter
+  );
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
+  const nextPage = () => {
+    if (
+      currentPage < Math.ceil(filteredCharacters.length / charactersPerPage)
+    ) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
   if (loading) {
     return <Loader />;
   }
@@ -180,8 +204,16 @@ export default function Chars() {
           searchChange={handleHomeworldSearchChange}
         />
       </div>
+      <div className="buttonContainer">
+        <button className="back" style={{ width: "80px" }} onClick={prevPage}>
+          Previous
+        </button>
+        <button className="back" style={{ width: "80px" }} onClick={nextPage}>
+          Next
+        </button>
+      </div>
       <div className="card-list">
-        {filteredCharacters.map((filteredCharacter: any, index: any) => {
+        {currentCharacters.map((filteredCharacter: any, index: any) => {
           const fullCharacterData = characters.find(
             (character) => character.name === filteredCharacter.name
           );
@@ -195,6 +227,7 @@ export default function Chars() {
           );
         })}
       </div>
+
       <br />
       <br />
       <br />

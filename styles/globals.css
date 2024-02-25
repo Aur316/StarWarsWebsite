@@ -1451,3 +1451,12 @@ img.loading {
   cursor: pointer;
   transition: all 0.3s ease;
 }
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-around;
+  gap: 20px;
+  text-align: center;
+  align-items: center;
+  background-color: #000000;
+}
